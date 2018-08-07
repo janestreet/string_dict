@@ -8,7 +8,7 @@ module Quickcheck = struct
 end
 
 let%expect_test _ =
-  Quickcheck.test (Quickcheck.String.Set.gen Quickcheck.String.gen)
+  Quickcheck.test (Quickcheck.String.Set.quickcheck_generator Quickcheck.String.quickcheck_generator)
     ~sizes:(Sequence.of_list [0; 1; 2; 3; 4; 5; 10; 100; 1000])
     ~trials:9
     ~f:(fun strings ->
