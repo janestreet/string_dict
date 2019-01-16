@@ -2,9 +2,10 @@
 //Requires: caml_string_unsafe_get, caml_ml_string_length
 function Base_string_dict_blocks_of_string(s) {
   var len = caml_ml_string_length(s);
-  var len2 = ((len + 3) >> 2) << 2;
+  var len2 = ((len + 3 + 1) >> 2) << 2;
   var u8 = new joo_global_object.Uint8Array(len2);
   for(var i = 0; i < len; i++) u8[i] = caml_string_unsafe_get(s,i);
+  u8[len2 - 1] = (len2 - len - 1);
   var u32 = new joo_global_object.Uint32Array(u8.buffer,0, len2 >> 2);
   return u32;
 }
