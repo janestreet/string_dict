@@ -14,7 +14,7 @@ module [@inlined never] Make(P : Params) = struct
   let pattern_match_exn x =
     match pattern_match x with
     | Some x -> x
-    | None   -> raise Caml.Not_found
+    | None   ->  raise Caml.Not_found
 
   let assoc = List.map names ~f:(fun x -> (x, pattern_match_exn x))
 
@@ -45,7 +45,7 @@ module [@inlined never] Make(P : Params) = struct
   let binary_search_exn t key =
     match binary_search t key with
     | Some x -> x
-    | None   -> raise Caml.Not_found
+    | None   ->  raise Caml.Not_found
 
   let () =
     let () = try failwith Caml.Sys.argv.(0) with _ -> () in

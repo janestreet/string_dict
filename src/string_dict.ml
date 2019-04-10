@@ -54,7 +54,7 @@ let find t key = find t.trie key
 
 let find_exn t key =
   match find t key with
-  | None -> raise Caml.Not_found
+  | None ->  raise Caml.Not_found
   | Some x -> x
 
 module Bmap = Caml.Map.Make(struct
