@@ -26,6 +26,13 @@ let%expect_test _ =
               String.sub str ~pos:0 ~len:(len - 1)
           ])
       in
+      (let from_map = Map.to_alist map in
+       let from_dict = String_dict.to_alist dict in
+       require [%here] ([%compare.equal: (string * int) list] from_map from_dict)
+         ~if_false_then_print_s:
+           (lazy [%sexp { from_map : (string * int) list
+                        ; from_dict : (string * int) list
+                        }]));
       List.iter inputs ~f:(fun str ->
         let from_map  = Map.find  map  str in
         let from_dict = String_dict.find dict str in
