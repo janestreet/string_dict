@@ -14,7 +14,7 @@ depends: [
   "base"
   "ppx_compare"
   "ppx_hash"
-  "dune"        {>= "1.5.1"}
+  "dune"        {>= "2.0.0"}
 ]
 synopsis: "Efficient static string dictionaries"
 description: "
