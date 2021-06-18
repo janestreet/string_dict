@@ -2,9 +2,9 @@ open Base
 open Expect_test_helpers_core
 
 module Quickcheck = struct
-  include Core_kernel.Quickcheck
+  include Core.Quickcheck
 
-  module String = Core_kernel.String
+  module String = Core.String
 end
 
 let%expect_test _ =
