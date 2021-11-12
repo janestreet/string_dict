@@ -82,7 +82,7 @@ module [@inlined never] Make(P : Params) = struct
     end)
 end
 
-module Two_fields = Make
+module _ = Make
     (struct
       type value = int
       let compare_value = Int.compare
@@ -97,7 +97,7 @@ module Two_fields = Make
       let names = [ "x"; "y" ]
     end)
 
-module Three_fields = Make
+module _ = Make
     (struct
       type value = int
       let compare_value = Int.compare
@@ -113,7 +113,7 @@ module Three_fields = Make
       let names = [ "x"; "y"; "z" ]
     end)
 
-module Big = Make
+module _ = Make
     (struct
       type value = int
       let compare_value = Int.compare
