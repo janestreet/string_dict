@@ -13,7 +13,7 @@ val t_of_sexp : (Sexp.t -> 'a) -> Sexp.t -> 'a t
 
 (** Creates a dictionary from an association list. It is an error for the list to contain
     duplicate keys. *)
-val of_alist     : (string * 'a) list -> ('a t, string) Caml.result
+val of_alist     : (string * 'a) list -> ('a t, string) Stdlib.result
 val of_alist_exn : (string * 'a) list ->  'a t
 
 val find     : 'a t -> string -> 'a option

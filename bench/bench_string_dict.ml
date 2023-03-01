@@ -8,13 +8,13 @@ module type Params = sig
 end
 
 (* Prevent inlining to avoid things being compiled to a no-op *)
-module [@inlined never] Make(P : Params) = struct
+module [@inline never] Make(P : Params) = struct
   open P
 
   let pattern_match_exn x =
     match pattern_match x with
     | Some x -> x
-    | None   ->  raise Caml.Not_found
+    | None   ->  raise Stdlib.Not_found
 
   let assoc = List.map names ~f:(fun x -> (x, pattern_match_exn x))
 
@@ -30,7 +30,7 @@ module [@inlined never] Make(P : Params) = struct
       if a >= b then
         None
       else
-        let c = Caml.(lsr) (a + b) 1 in
+        let c = Stdlib.( lsr ) (a + b) 1 in
         let (key', v) = t.(c) in
         let d = String.compare key key' in
         if d < 0 then
@@ -45,10 +45,10 @@ module [@inlined never] Make(P : Params) = struct
   let binary_search_exn t key =
     match binary_search t key with
     | Some x -> x
-    | None   ->  raise Caml.Not_found
+    | None   ->  raise Stdlib.Not_found
 
   let () =
-    let () = try failwith Caml.Sys.argv.(0) with _ -> () in
+    let () = try failwith Stdlib.Sys.argv.(0) with _ -> () in
     List.iter names ~f:(fun name ->
       let v = pattern_match_exn name in
       let (=) = [%compare.equal: value] in
@@ -56,7 +56,7 @@ module [@inlined never] Make(P : Params) = struct
       assert (Map. find_exn        map   name = v);
       assert (binary_search_exn    array name = v))
 
-  let keep x = ignore (Caml.Obj.tag (Caml.Obj.repr x) : int)
+  let keep x = ignore (Stdlib.Obj.tag (Stdlib.Obj.repr x) : int)
 
   let%bench_module "" [@name_suffix desc] =
     (module struct

@@ -54,10 +54,10 @@ let find t key = find t.trie key
 
 let find_exn t key =
   match find t key with
-  | None ->  raise Caml.Not_found
+  | None ->  raise Stdlib.Not_found
   | Some x -> x
 
-module Bmap = Caml.Map.Make(struct
+module Bmap = Stdlib.Map.Make(struct
     type t = block [@@deriving compare]
   end)
 
@@ -94,7 +94,7 @@ let of_alist l =
           let block = get_block blocks pos in
           let others =
             match Bmap.find block acc with
-            | exception (Not_found_s _ | Caml.Not_found) -> []
+            | exception (Not_found_s _ | Stdlib.Not_found) -> []
             | l -> l
           in
           Bmap.add block (entry :: others) acc)
