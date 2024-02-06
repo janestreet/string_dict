@@ -1,3 +1,5 @@
-(library (name string_dict_test)
+(library
+ (name string_dict_test)
  (libraries base core expect_test_helpers_core string_dict)
- (preprocess (pps ppx_jane)))
+ (preprocess
+  (pps ppx_jane)))

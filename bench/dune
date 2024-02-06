@@ -1,2 +1,5 @@
-(library (name string_dict_bench) (libraries base string_dict)
- (preprocess (pps ppx_jane)))
+(library
+ (name string_dict_bench)
+ (libraries base string_dict)
+ (preprocess
+  (pps ppx_jane)))
