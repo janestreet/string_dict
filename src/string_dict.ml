@@ -59,8 +59,8 @@ let find_exn t key =
 ;;
 
 module Bmap = Stdlib.Map.Make (struct
-  type t = block [@@deriving compare]
-end)
+    type t = block [@@deriving compare]
+  end)
 
 let rec check_no_duplicates_in_sorted_list = function
   | (a, _) :: ((b, _) :: _ as rest) ->

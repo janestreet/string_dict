@@ -9,7 +9,7 @@ module type Params = sig
 end
 
 (* Prevent inlining to avoid things being compiled to a no-op *)
-module Make (P : Params) = struct
+module [@inline never] Make (P : Params) = struct
   open P
 
   let pattern_match_exn x =
@@ -91,81 +91,80 @@ module Make (P : Params) = struct
     end)
   ;;
 end
-[@@inline never]
 
 module _ = Make (struct
-  type value = int
+    type value = int
 
-  let compare_value = Int.compare
-  let desc = "2fields"
+    let compare_value = Int.compare
+    let desc = "2fields"
 
-  let pattern_match = function
-    | "x" -> Some 0
-    | "y" -> Some 1
-    | _ -> None
-  ;;
+    let pattern_match = function
+      | "x" -> Some 0
+      | "y" -> Some 1
+      | _ -> None
+    ;;
 
-  let names = [ "x"; "y" ]
-end)
-
-module _ = Make (struct
-  type value = int
-
-  let compare_value = Int.compare
-  let desc = "3fields"
-
-  let pattern_match = function
-    | "x" -> Some 0
-    | "y" -> Some 1
-    | "z" -> Some 2
-    | _ -> None
-  ;;
-
-  let names = [ "x"; "y"; "z" ]
-end)
+    let names = [ "x"; "y" ]
+  end)
 
 module _ = Make (struct
-  type value = int
+    type value = int
 
-  let compare_value = Int.compare
-  let desc = "Big"
+    let compare_value = Int.compare
+    let desc = "3fields"
 
-  (* Names taken from the async config record *)
-  let pattern_match = function
-    | "abort_after_thread_pool_stuck_for" -> Some 0
-    | "check_invariants" -> Some 1
-    | "detect_invalid_access_from_thread" -> Some 2
-    | "dump_core_on_job_delay" -> Some 3
-    | "epoll_max_ready_events" -> Some 4
-    | "file_descr_watcher" -> Some 5
-    | "max_inter_cycle_timeout" -> Some 6
-    | "max_num_open_file_descrs" -> Some 7
-    | "max_num_threads" -> Some 8
-    | "max_num_jobs_per_priority_per_cycle" -> Some 9
-    | "min_inter_cycle_timeout" -> Some 10
-    | "print_debug_messages_for" -> Some 11
-    | "record_backtraces" -> Some 12
-    | "report_thread_pool_stuck_for" -> Some 13
-    | "timing_wheel_config" -> Some 14
-    | _ -> None
-  ;;
+    let pattern_match = function
+      | "x" -> Some 0
+      | "y" -> Some 1
+      | "z" -> Some 2
+      | _ -> None
+    ;;
 
-  let names =
-    [ "abort_after_thread_pool_stuck_for"
-    ; "check_invariants"
-    ; "detect_invalid_access_from_thread"
-    ; "dump_core_on_job_delay"
-    ; "epoll_max_ready_events"
-    ; "file_descr_watcher"
-    ; "max_inter_cycle_timeout"
-    ; "max_num_open_file_descrs"
-    ; "max_num_threads"
-    ; "max_num_jobs_per_priority_per_cycle"
-    ; "min_inter_cycle_timeout"
-    ; "print_debug_messages_for"
-    ; "record_backtraces"
-    ; "report_thread_pool_stuck_for"
-    ; "timing_wheel_config"
-    ]
-  ;;
-end)
+    let names = [ "x"; "y"; "z" ]
+  end)
+
+module _ = Make (struct
+    type value = int
+
+    let compare_value = Int.compare
+    let desc = "Big"
+
+    (* Names taken from the async config record *)
+    let pattern_match = function
+      | "abort_after_thread_pool_stuck_for" -> Some 0
+      | "check_invariants" -> Some 1
+      | "detect_invalid_access_from_thread" -> Some 2
+      | "dump_core_on_job_delay" -> Some 3
+      | "epoll_max_ready_events" -> Some 4
+      | "file_descr_watcher" -> Some 5
+      | "max_inter_cycle_timeout" -> Some 6
+      | "max_num_open_file_descrs" -> Some 7
+      | "max_num_threads" -> Some 8
+      | "max_num_jobs_per_priority_per_cycle" -> Some 9
+      | "min_inter_cycle_timeout" -> Some 10
+      | "print_debug_messages_for" -> Some 11
+      | "record_backtraces" -> Some 12
+      | "report_thread_pool_stuck_for" -> Some 13
+      | "timing_wheel_config" -> Some 14
+      | _ -> None
+    ;;
+
+    let names =
+      [ "abort_after_thread_pool_stuck_for"
+      ; "check_invariants"
+      ; "detect_invalid_access_from_thread"
+      ; "dump_core_on_job_delay"
+      ; "epoll_max_ready_events"
+      ; "file_descr_watcher"
+      ; "max_inter_cycle_timeout"
+      ; "max_num_open_file_descrs"
+      ; "max_num_threads"
+      ; "max_num_jobs_per_priority_per_cycle"
+      ; "min_inter_cycle_timeout"
+      ; "print_debug_messages_for"
+      ; "record_backtraces"
+      ; "report_thread_pool_stuck_for"
+      ; "timing_wheel_config"
+      ]
+    ;;
+  end)

@@ -1,3 +1,5 @@
+#undef Hide_upstream_size_macros
+
 #include <caml/mlvalues.h>
 #include <caml/fail.h>
 #include <caml/alloc.h>

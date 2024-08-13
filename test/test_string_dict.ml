@@ -26,7 +26,6 @@ let%expect_test _ =
       (let from_map = Map.to_alist map in
        let from_dict = String_dict.to_alist dict in
        require
-         [%here]
          ([%compare.equal: (string * int) list] from_map from_dict)
          ~if_false_then_print_s:
            (lazy
@@ -35,7 +34,6 @@ let%expect_test _ =
         let from_map = Map.find map str in
         let from_dict = String_dict.find dict str in
         require
-          [%here]
           ([%compare.equal: int option] from_map from_dict)
           ~if_false_then_print_s:
             (lazy
