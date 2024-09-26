@@ -93,9 +93,9 @@ let of_alist l =
         List.fold l ~init:Bmap.empty ~f:(fun acc ((blocks, _) as entry) ->
           let block = get_block blocks pos in
           let others =
-            match Bmap.find block acc with
-            | exception (Not_found_s _ | Stdlib.Not_found) -> []
-            | l -> l
+            match Bmap.find_opt block acc with
+            | None -> []
+            | Some l -> l
           in
           Bmap.add block (entry :: others) acc)
         |> Bmap.bindings
