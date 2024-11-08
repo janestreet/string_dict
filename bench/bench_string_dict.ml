@@ -62,34 +62,32 @@ module [@inline never] Make (P : Params) = struct
 
   let keep x = ignore (Stdlib.Obj.tag (Stdlib.Obj.repr x) : int)
 
-  let%bench_module ("" [@name_suffix desc]) =
-    (module struct
-      let%bench_fun "benchmark overhead" =
-        let f name = keep name in
-        fun () -> List.iter names ~f
-      ;;
+  module%bench [@name_suffix desc] _ = struct
+    let%bench_fun "benchmark overhead" =
+      let f name = keep name in
+      fun () -> List.iter names ~f
+    ;;
 
-      let%bench_fun "pattern match" =
-        let f name = keep (pattern_match name : value option) in
-        fun () -> List.iter names ~f
-      ;;
+    let%bench_fun "pattern match" =
+      let f name = keep (pattern_match name : value option) in
+      fun () -> List.iter names ~f
+    ;;
 
-      let%bench_fun "dict" =
-        let f name = keep (String_dict.find dict name : value option) in
-        fun () -> List.iter names ~f
-      ;;
+    let%bench_fun "dict" =
+      let f name = keep (String_dict.find dict name : value option) in
+      fun () -> List.iter names ~f
+    ;;
 
-      let%bench_fun "map" =
-        let f name = keep (Map.find map name : value option) in
-        fun () -> List.iter names ~f
-      ;;
+    let%bench_fun "map" =
+      let f name = keep (Map.find map name : value option) in
+      fun () -> List.iter names ~f
+    ;;
 
-      let%bench_fun "binary_search" =
-        let f name = keep (binary_search array name : value option) in
-        fun () -> List.iter names ~f
-      ;;
-    end)
-  ;;
+    let%bench_fun "binary_search" =
+      let f name = keep (binary_search array name : value option) in
+      fun () -> List.iter names ~f
+    ;;
+  end
 end
 
 module _ = Make (struct
