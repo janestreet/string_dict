@@ -1,4 +1,4 @@
-(** Efficient static string dictionaries.  By static, we mean that new key-value pairs
+(** Efficient static string dictionaries. By static, we mean that new key-value pairs
     cannot be added after the dictionary is created.
 
     This uses the algorithm the OCaml compiler uses for pattern matching on strings. *)

@@ -8,4 +8,7 @@
  (preprocess
   (pps ppx_compare ppx_hash))
  (js_of_ocaml
-  (javascript_files string_dict.js)))
+  (javascript_files string_dict.js))
+ (wasm_of_ocaml
+  (javascript_files string_dict.js)
+  (wasm_files string_dict.wat)))
