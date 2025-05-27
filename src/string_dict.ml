@@ -15,7 +15,7 @@ open Ppx_compare_lib.Builtin
 *)
 
 (* A block. This module only assume that we can split a string into a list of blocks. *)
-type block = nativeint [@@deriving compare]
+type block = nativeint [@@deriving compare ~localize]
 
 (* (compact) array of blocks *)
 type blocks
@@ -34,7 +34,7 @@ type 'a trie =
     keys : blocks
   ; (* Array of length [num_children]. [children.(i)] correspond to all the children whose
        nth block is [keys.(i)]. *)
-    children : 'a trie array
+    children : 'a trie iarray
   ; (* If this node correspond to an entry, this is the associated value. *)
     value : 'a option
   }
@@ -58,8 +58,8 @@ let find_exn t key =
   | Some x -> x
 ;;
 
-module Bmap = Stdlib.Map.Make (struct
-    type t = block [@@deriving compare]
+module Bmap = Basement.Stdlib_shim.Map.MakePortable (struct
+    type t = block [@@deriving compare ~localize]
   end)
 
 let rec check_no_duplicates_in_sorted_list = function
@@ -90,20 +90,23 @@ let of_alist l =
           assert false
       in
       let keys, subs =
-        List.fold l ~init:Bmap.empty ~f:(fun acc ((blocks, _) as entry) ->
-          let block = get_block blocks pos in
-          let others =
-            match Bmap.find_opt block acc with
-            | None -> []
-            | Some l -> l
-          in
-          Bmap.add block (entry :: others) acc)
+        List.fold
+          l
+          ~init:(Portability_hacks.magic_uncontended__promise_deeply_immutable Bmap.empty)
+          ~f:(fun acc ((blocks, _) as entry) ->
+            let block = get_block blocks pos in
+            let others =
+              match Bmap.find_opt block acc with
+              | None -> []
+              | Some l -> l
+            in
+            Bmap.add block (entry :: others) acc)
         |> Bmap.bindings
         |> List.unzip
       in
       let keys = make_blocks (Array.of_list keys) in
-      let children = Array.of_list (List.map subs ~f:(loop ~pos:(pos + 1))) in
-      { num_children = Array.length children; keys; children; value }
+      let children = Iarray.of_list (List.map subs ~f:(loop ~pos:(pos + 1))) in
+      { num_children = Iarray.length children; keys; children; value }
     in
     let trie = loop (List.map alist ~f:(fun (s, x) -> blocks_of_string s, x)) ~pos:0 in
     Ok { trie; alist }
@@ -118,7 +121,7 @@ let of_alist_exn l =
 module For_conv = struct
   open Hash.Builtin
 
-  type 'a t = (string * 'a) list [@@deriving compare, hash]
+  type 'a t = (string * 'a) list [@@deriving compare ~localize, hash]
 
   let sexp_of_t f l = Sexp.List (List.map l ~f:(fun (k, v) -> Sexp.List [ Atom k; f v ]))
   let of_sexp_error msg sexp = raise (Sexp.Of_sexp_error (Failure msg, sexp))
@@ -139,6 +142,7 @@ module For_conv = struct
 end
 
 let compare f a b = For_conv.compare f a.alist b.alist
+let compare__local f a b = For_conv.compare__local f a.alist b.alist
 let hash_fold_t f s t = For_conv.hash_fold_t f s t.alist
 let sexp_of_t f t = For_conv.sexp_of_t f t.alist
 

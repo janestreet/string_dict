@@ -4,7 +4,7 @@
   (names string_dict_stubs))
  (name string_dict)
  (public_name string_dict)
- (libraries base)
+ (libraries basement base)
  (preprocess
   (pps ppx_compare ppx_hash))
  (js_of_ocaml
