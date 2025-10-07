@@ -1,11 +1,13 @@
-(** Efficient static string dictionaries.  By static, we mean that new key-value pairs
+@@ portable
+
+(** Efficient static string dictionaries. By static, we mean that new key-value pairs
     cannot be added after the dictionary is created.
 
     This uses the algorithm the OCaml compiler uses for pattern matching on strings. *)
 
 open Base
 
-type 'a t [@@deriving hash, compare]
+type 'a t : immutable_data with 'a [@@deriving hash, compare ~localize]
 
 (** We don't use [[@@deriving sexp]], to avoid a circular dependency. *)
 val sexp_of_t : ('a -> Sexp.t) -> 'a t -> Sexp.t

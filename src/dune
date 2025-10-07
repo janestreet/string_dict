@@ -4,8 +4,11 @@
   (names string_dict_stubs))
  (name string_dict)
  (public_name string_dict)
- (libraries base)
+ (libraries basement base)
  (preprocess
   (pps ppx_compare ppx_hash))
  (js_of_ocaml
-  (javascript_files string_dict.js)))
+  (javascript_files string_dict.js))
+ (wasm_of_ocaml
+  (javascript_files string_dict.js)
+  (wasm_files string_dict.wat)))
