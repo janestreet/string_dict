@@ -6,7 +6,7 @@
  (public_name string_dict)
  (libraries basement base)
  (preprocess
-  (pps ppx_compare ppx_hash))
+  (pps ppx_compare ppx_hash -compare-require-explicit-locality))
  (js_of_ocaml
   (javascript_files string_dict.js))
  (wasm_of_ocaml
