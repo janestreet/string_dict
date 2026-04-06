@@ -6,6 +6,7 @@ bug-reports: "https://github.com/janestreet/string_dict/issues"
 dev-repo: "git+https://github.com/janestreet/string_dict.git"
 doc: "https://ocaml.janestreet.com/ocaml-core/latest/doc/string_dict/index.html"
 license: "MIT"
+x-maintenance-intent: ["(latest)"]
 build: [
   ["dune" "build" "-p" name "-j" jobs]
 ]

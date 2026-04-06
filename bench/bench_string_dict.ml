@@ -1,7 +1,7 @@
 open! Base
 
 module type Params = sig
-  type value [@@deriving compare]
+  type value [@@deriving compare ~localize]
 
   val pattern_match : string -> value option
   val names : string list
@@ -54,7 +54,7 @@ module [@inline never] Make (P : Params) = struct
     in
     List.iter names ~f:(fun name ->
       let v = pattern_match_exn name in
-      let ( = ) = [%compare.equal: value] in
+      let ( = ) = [%compare.equal: value] [@mode local] in
       assert (String_dict.find_exn dict name = v);
       assert (Map.find_exn map name = v);
       assert (binary_search_exn array name = v))
@@ -93,7 +93,7 @@ end
 module _ = Make (struct
     type value = int
 
-    let compare_value = Int.compare
+    let%template[@mode m = (local, global)] compare_value = (Int.compare [@mode m])
     let desc = "2fields"
 
     let pattern_match = function
@@ -108,7 +108,7 @@ module _ = Make (struct
 module _ = Make (struct
     type value = int
 
-    let compare_value = Int.compare
+    let%template[@mode m = (local, global)] compare_value = (Int.compare [@mode m])
     let desc = "3fields"
 
     let pattern_match = function
@@ -124,7 +124,7 @@ module _ = Make (struct
 module _ = Make (struct
     type value = int
 
-    let compare_value = Int.compare
+    let%template[@mode m = (local, global)] compare_value = (Int.compare [@mode m])
     let desc = "Big"
 
     (* Names taken from the async config record *)
