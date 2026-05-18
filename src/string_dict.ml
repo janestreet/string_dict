@@ -31,7 +31,7 @@ external get_block : blocks -> int -> block @@ portable = "Base_string_dict_get_
 external num_blocks : blocks -> int @@ portable = "Base_string_dict_num_blocks"
 external make_blocks : block array -> blocks @@ portable = "Base_string_dict_make_blocks"
 
-(* A dictionary is organized as a trie.  This type is accessed by the C implementation of
+(* A dictionary is organized as a trie. This type is accessed by the C implementation of
    [find]. *)
 type 'a trie =
   { num_children : int
