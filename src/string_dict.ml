@@ -15,7 +15,7 @@ open Ppx_compare_lib.Builtin
 *)
 
 (* A block. This module only assume that we can split a string into a list of blocks. *)
-type block = nativeint [@@deriving compare ~localize]
+type block = nativeint [@@deriving compare]
 
 (* (compact) array of blocks *)
 type blocks
@@ -59,7 +59,7 @@ let find_exn t key =
 ;;
 
 module Bmap = Basement.Stdlib_shim.Map.MakePortable (struct
-    type t = block [@@deriving compare ~localize]
+    type t = block [@@deriving compare]
   end)
 
 let rec check_no_duplicates_in_sorted_list = function
@@ -121,7 +121,7 @@ let of_alist_exn l =
 module For_conv = struct
   open Hash.Builtin
 
-  type 'a t = (string * 'a) list [@@deriving compare ~localize, hash]
+  type 'a t = (string * 'a) list [@@deriving compare, hash]
 
   let sexp_of_t f l = Sexp.List (List.map l ~f:(fun (k, v) -> Sexp.List [ Atom k; f v ]))
   let of_sexp_error msg sexp = raise (Sexp.Of_sexp_error (Failure msg, sexp))
@@ -142,7 +142,6 @@ module For_conv = struct
 end
 
 let compare f a b = For_conv.compare f a.alist b.alist
-let compare__local f a b = For_conv.compare__local f a.alist b.alist
 let hash_fold_t f s t = For_conv.hash_fold_t f s t.alist
 let sexp_of_t f t = For_conv.sexp_of_t f t.alist
 

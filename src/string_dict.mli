@@ -5,7 +5,7 @@
 
 open Base
 
-type 'a t [@@deriving hash, compare ~localize]
+type 'a t [@@deriving hash, compare]
 
 (** We don't use [[@@deriving sexp]], to avoid a circular dependency. *)
 val sexp_of_t : ('a -> Sexp.t) -> 'a t -> Sexp.t
