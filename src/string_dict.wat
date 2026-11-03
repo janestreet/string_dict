@@ -1,12 +1,25 @@
 (module
-   (import "env" "caml_copy_nativeint"
-      (func $caml_copy_nativeint (param i32) (result (ref eq))))
-   (import "env" "Nativeint_val"
-      (func $Nativeint_val (param (ref eq)) (result i32)))
-
+   (@if $portable-int
+   (@then
+      (import "env" "int_val_32_exn"
+         (func $int_val_32_exn (param (ref eq)) (param (ref eq)) (result i32)))
+      (import "env" "caml_copy_nativeint"
+         (func $caml_copy_nativeint (param i64) (result (ref eq))))
+      (import "env" "Nativeint_val"
+         (func $Nativeint_val (param (ref eq)) (result i64)))
+   )
+   (@else
+      (import "env" "caml_copy_nativeint"
+         (func $caml_copy_nativeint (param i32) (result (ref eq))))
+      (import "env" "Nativeint_val"
+         (func $Nativeint_val (param (ref eq)) (result i32)))
+   ))
    (type $string (array (mut i8)))
+   (type $bytes (array (mut i8)))
    (type $block (array (mut (ref eq))))
    (type $int_array (array (mut i32)))
+
+   (@string $sd_offset "Base_string_dict: offset out of range")
 
    (func (export "Base_string_dict_blocks_of_string")
       (param (ref eq)) (result (ref eq))
@@ -62,9 +75,28 @@
       (local $blocks (ref $string))
       (local $offset i32) (local $len i32) (local $res i32)
       (local.set $blocks (ref.cast (ref $string) (local.get $vblocks)))
-      (local.set $offset (i31.get_s (ref.cast (ref i31) (local.get $voffset))))
-      (return_call $caml_copy_nativeint
-         (call $get_block (local.get $blocks) (local.get $offset))))
+      (local.set $offset (@if $portable-int
+                         (@then
+                            (call $int_val_32_exn (local.get $voffset)
+                               (global.get $sd_offset)))
+                         (@else
+                            (i31.get_s
+                               (ref.cast (ref i31) (local.get $voffset))))
+                         ))
+      (@if $portable-int
+      (@then
+         ;; Sign-extend: blocks are compared *signed* both by
+         ;; [Base_string_dict_find]'s [i32.lt_s]/[i32.gt_s] below and by
+         ;; [Nativeint.compare] on the OCaml side (which sorts the keys at
+         ;; construction time), so the 64-bit image must preserve the signed
+         ;; 32-bit order.
+         (return_call $caml_copy_nativeint
+            (i64.extend_i32_s
+               (call $get_block (local.get $blocks) (local.get $offset)))))
+      (@else
+         (return_call $caml_copy_nativeint
+            (call $get_block (local.get $blocks) (local.get $offset))))
+      ))
 
    (func $num_blocks (param $blocks (ref $string)) (result i32)
       (i32.shr_u (i32.add (array.len (local.get $blocks)) (i32.const 4))
@@ -85,10 +117,19 @@
       (loop $loop
          (if (i32.lt_u (local.get $i) (local.get $len))
             (then
-               (array.set $int_array (local.get $res) (local.get $i)
-                  (call $Nativeint_val
-                     (array.get $block (local.get $blocks)
-                        (i32.add (local.get $i) (i32.const 1)))))
+               (@if $portable-int
+               (@then
+                  (array.set $int_array (local.get $res) (local.get $i)
+                     (i32.wrap_i64
+                        (call $Nativeint_val
+                           (array.get $block (local.get $blocks)
+                              (i32.add (local.get $i) (i32.const 1)))))))
+               (@else
+                  (array.set $int_array (local.get $res) (local.get $i)
+                     (call $Nativeint_val
+                        (array.get $block (local.get $blocks)
+                           (i32.add (local.get $i) (i32.const 1)))))
+               ))
                (local.set $i (i32.add (local.get $i) (i32.const 1)))
                (br $loop))))
       (local.get $res))
@@ -114,9 +155,12 @@
                      (array.get $block (local.get $t) (i32.const 2))))
                (local.set $a (i32.const 0))
                (local.set $b
+                  ;; Dict block field written by [String_dict]; always an [i31].
+                  ;; lint-ignore-start manual-portability-handling-unsafe
                   (i31.get_s
                      (ref.cast (ref i31)
                         (array.get $block (local.get $t) (i32.const 1)))))
+                  ;; lint-ignore-end manual-portability-handling-unsafe
                (if (i32.eq (local.get $b) (i32.const 1))
                   (then
                      (if (i32.eq (local.get $input_block)

@@ -2,4 +2,4 @@
  (name string_dict_test)
  (libraries base core expect_test_helpers_core string_dict)
  (preprocess
-  (pps ppx_jane)))
+  (pps ppx_jane -compare-require-explicit-locality)))

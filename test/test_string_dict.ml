@@ -26,7 +26,7 @@ let%expect_test _ =
       (let from_map = Map.to_alist map in
        let from_dict = String_dict.to_alist dict in
        require
-         ([%compare.equal: (string * int) list] from_map from_dict)
+         (([%compare.equal: (string * int) list] [@mode local]) from_map from_dict)
          ~if_false_then_print_s:
            (lazy
              [%sexp { from_map : (string * int) list; from_dict : (string * int) list }]));
@@ -34,7 +34,7 @@ let%expect_test _ =
         let from_map = Map.find map str in
         let from_dict = String_dict.find dict str in
         require
-          ([%compare.equal: int option] from_map from_dict)
+          (([%compare.equal: int option] [@mode local]) from_map from_dict)
           ~if_false_then_print_s:
             (lazy
               [%sexp
